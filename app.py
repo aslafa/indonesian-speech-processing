@@ -296,12 +296,20 @@ with tab_processing:
                         use_cache=use_result_cache,
                     )
                     if not ok_dl:
-                        st.error(f"Gagal mengunduh audio: {audio_res}")
-                        st.stop()
-                    audio_path_to_process = audio_res
-                    is_temp_audio = not use_result_cache
-                    if video_title:
-                        input_source_label = f"YouTube: {video_title}"
+                        progress_bar.empty()
+                        status_box.empty()
+                        st.error(f"Gagal Mengambil Audio YouTube:\n\n{audio_res}")
+                        if "403" in audio_res or "Forbidden" in audio_res or "IP server" in audio_res:
+                            st.info(
+                                "💡 **Saran:** Silakan buka video di YouTube pada perangkat Anda, "
+                                "simpan audionya (MP3/M4A/WAV), lalu beralih ke tab pilihan **'Unggah Audio'** di atas."
+                            )
+                        audio_path_to_process = None
+                    else:
+                        audio_path_to_process = audio_res
+                        is_temp_audio = not use_result_cache
+                        if video_title:
+                            input_source_label = f"YouTube: {video_title}"
 
                 if audio_path_to_process:
                     def _pipeline_progress(pct: int, msg: str) -> None:
