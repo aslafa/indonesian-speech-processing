@@ -1,0 +1,432 @@
+/* Indonesian Speech-to-Text - Professional Audio Processing Platform */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+    --primary: #0F766E;
+    --primary-hover: #0D655E;
+    --primary-active: #115E59;
+    --primary-light: #F0FDFA;
+    --primary-border: #CCFBF1;
+    --bg-main: #F8F7F2;
+    --bg-surface: #FFFFFF;
+    --bg-subtle: #F1EFEA;
+    --bg-sidebar: #FAF9F5;
+    --text-heading: #0F172A;
+    --text-body: #334155;
+    --text-muted: #64748B;
+    --border-subtle: #E2E8F0;
+    --border-card: #E5E3D8;
+    --shadow-subtle: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+/* Global Reset & Typography */
+html, body, [class*="css"] {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text-body);
+    background-color: var(--bg-main);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Streamlit Main Container Alignment */
+.main .block-container {
+    padding-top: 1.75rem;
+    padding-bottom: 3.5rem;
+    max-width: 1080px;
+}
+
+header[data-testid="stHeader"] {
+    background-color: transparent !important;
+}
+
+/* Header Aplikasi Utama */
+.app-header {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-card);
+    border-radius: 6px;
+    padding: 22px 26px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-subtle);
+}
+
+.app-title {
+    font-size: 1.55rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-heading);
+    margin: 0 0 6px 0;
+}
+
+.app-subtitle {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.app-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--primary);
+    background-color: var(--primary-light);
+    border: 1px solid var(--primary-border);
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+}
+
+/* Frame Masukan / Input Panel */
+.input-panel {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-card);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-subtle);
+}
+
+.section-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-heading);
+    letter-spacing: -0.01em;
+    margin: 18px 0 12px 0;
+}
+
+/* Metadata Strip Hasil */
+.metadata-strip {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 12px 18px;
+    font-size: 0.88rem;
+    color: var(--text-body);
+    margin-bottom: 16px;
+}
+
+/* Status Indikator Sistem di Sidebar */
+.system-status {
+    display: block;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-body);
+    margin-bottom: 8px;
+}
+
+.system-status.active {
+    color: var(--primary);
+    background-color: var(--primary-light);
+    border-color: var(--primary-border);
+    font-weight: 600;
+}
+
+/* Metrik Card Minimalis & Profesional */
+.metric-box {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 14px 18px;
+    height: 100%;
+    box-shadow: var(--shadow-subtle);
+}
+
+.metric-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.metric-value {
+    font-size: 1.35rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-heading);
+    letter-spacing: -0.02em;
+}
+
+.metric-sub {
+    font-size: 0.75rem;
+    color: var(--primary);
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+}
+
+/* Ringkasan Eksekutif */
+.summary-container {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--primary-border);
+    border-radius: 6px;
+    padding: 18px 24px;
+    font-size: 0.94rem;
+    line-height: 1.72;
+    color: #1E293B;
+    margin: 8px 0 18px 0;
+    box-shadow: var(--shadow-subtle);
+}
+
+/* Notice & Status Box */
+.notice-box {
+    background-color: var(--primary-light);
+    border: 1px solid var(--primary-border);
+    border-radius: 6px;
+    padding: 12px 18px;
+    font-size: 0.86rem;
+    color: var(--text-body);
+    margin-bottom: 16px;
+}
+
+.notice-box strong {
+    color: var(--primary);
+}
+
+/* Tabel Evaluasi Akademis */
+.academic-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 22px 0;
+    font-size: 0.875rem;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: var(--shadow-subtle);
+}
+
+.academic-table th {
+    background-color: var(--bg-subtle);
+    color: var(--text-heading);
+    font-weight: 600;
+    text-align: left;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.academic-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-body);
+    vertical-align: middle;
+}
+
+.academic-table tr:last-child td {
+    border-bottom: none;
+}
+
+.academic-table tr:hover td {
+    background-color: #FAF9F6;
+}
+
+.academic-table td.mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.84rem;
+}
+
+/* Card Rangkuman Info Evaluasi */
+.eval-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-subtle);
+}
+
+.eval-card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-heading);
+    margin-bottom: 8px;
+}
+
+.eval-card-text {
+    font-size: 0.88rem;
+    color: var(--text-body);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Primary Button Styling */
+.stButton > button {
+    background-color: var(--primary) !important;
+    color: #FFFFFF !important;
+    border: 1px solid var(--primary) !important;
+    border-radius: 5px !important;
+    font-weight: 600 !important;
+    font-size: 0.92rem !important;
+    padding: 9px 24px !important;
+    box-shadow: none !important;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
+}
+
+.stButton > button:hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+    box-shadow: none !important;
+}
+
+.stButton > button:active {
+    background-color: var(--primary-active) !important;
+    border-color: var(--primary-active) !important;
+}
+
+/* Secondary Button Styling di Sidebar */
+section[data-testid="stSidebar"] .stButton > button {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-body) !important;
+    border: 1px solid var(--border-subtle) !important;
+    font-weight: 500 !important;
+    font-size: 0.84rem !important;
+    padding: 6px 14px !important;
+}
+
+section[data-testid="stSidebar"] .stButton > button:hover {
+    background-color: var(--primary-light) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+}
+
+/* Download Button Styling */
+.stDownloadButton > button {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-body) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 5px !important;
+    font-weight: 500 !important;
+    font-size: 0.88rem !important;
+    box-shadow: none !important;
+    padding: 9px 20px !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
+}
+
+.stDownloadButton > button:hover {
+    background-color: var(--primary-light) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    box-shadow: none !important;
+}
+
+/* Tab Navigation Styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 0px;
+    background-color: transparent;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background-color: transparent !important;
+    color: var(--text-muted) !important;
+    font-size: 0.94rem !important;
+    font-weight: 500 !important;
+    border-radius: 4px 4px 0 0 !important;
+    padding: 10px 22px !important;
+    border: none !important;
+    transition: color 0.15s ease !important;
+}
+
+.stTabs [data-baseweb="tab"]:hover {
+    color: var(--text-heading) !important;
+}
+
+.stTabs [aria-selected="true"] {
+    color: var(--primary) !important;
+    border-bottom: 2px solid var(--primary) !important;
+    font-weight: 600 !important;
+}
+
+/* Sidebar Styling */
+section[data-testid="stSidebar"] {
+    background-color: var(--bg-sidebar) !important;
+    border-right: 1px solid var(--border-card) !important;
+}
+
+section[data-testid="stSidebar"] hr {
+    border-color: var(--border-subtle) !important;
+    margin: 18px 0 !important;
+}
+
+.sidebar-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    letter-spacing: -0.015em;
+    margin-bottom: 3px;
+}
+
+.sidebar-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    line-height: 1.45;
+}
+
+.sidebar-section-label {
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin: 14px 0 8px 0;
+}
+
+/* Form Inputs */
+.stTextInput input, .stTextArea textarea, .stSelectbox select {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-body) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 5px !important;
+    font-size: 0.9rem !important;
+    padding: 8px 12px !important;
+}
+
+.stTextInput input:focus, .stTextArea textarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 1px var(--primary) !important;
+}
+
+/* Progress Bar */
+.stProgress > div > div > div > div {
+    background-color: var(--primary) !important;
+    border-radius: 2px !important;
+}
+
+/* Alert Notification */
+div[data-testid="stAlert"] {
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 6px !important;
+    color: var(--text-body) !important;
+    font-size: 0.88rem !important;
+    box-shadow: var(--shadow-subtle);
+}
+
+/* Expander Styling */
+div[data-testid="stExpander"] {
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 6px !important;
+    box-shadow: var(--shadow-subtle);
+}
+
+/* Audio Player */
+audio {
+    width: 100%;
+    height: 40px;
+    border-radius: 6px;
+    margin: 8px 0;
+}

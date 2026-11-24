@@ -1,0 +1,37 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.env
+
+# Model weights cache
+huggingface/
+.cache/
+
+# Audio and generated files
+temp_audio/
+temp_data/
+cache_data/
+downloads/
+_backup_baseline/
+.impeccable/
+*.mp3
+*.wav
+*.m4a
+*.ogg
+*.vtt
+*.srt
+!demo_data/*.mp3
+
+# Streamlit config and secrets
+.streamlit/secrets.toml
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

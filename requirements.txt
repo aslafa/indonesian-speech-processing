@@ -1,0 +1,23 @@
+# Dependensi Aplikasi Transkripsi dan Perangkuman Otomatis Bahasa Indonesia
+# Python 3.10+ kompatibel
+
+# Speech-to-Text & Audio Processing
+faster-whisper>=1.0.0
+av>=11.0.0,<14.0.0
+yt-dlp>=2024.0.0
+imageio-ffmpeg>=0.5.1
+
+# NLP, Model Transformers & Tokenizer
+torch>=2.0.0
+transformers>=4.38.0
+sentencepiece>=0.2.0
+
+# Antarmuka Pengguna & Data
+streamlit>=1.30.0
+pandas>=2.0.0
+numpy>=1.24.0
+psutil>=5.9.0
+
+# Metrik Evaluasi (Konsisten dengan Notebook Colab)
+jiwer>=3.0.0
+rouge-score>=0.1.2
