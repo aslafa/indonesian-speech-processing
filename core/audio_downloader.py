@@ -70,6 +70,103 @@ def _find_cached_youtube_file(output_dir: str, file_prefix: str) -> Optional[str
     return None
 
 
+def _build_ydl_options(
+    out_template: str,
+    target_mp3: str,
+    convert_to_mp3: bool,
+    bin_dir: Optional[str],
+    player_clients: Optional[list] = None,
+    cookies_path: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Menyusun konfigurasi YoutubeDL yang tangguh dan adaptif."""
+    opts: Dict[str, Any] = {
+        # Prioritaskan stream audio m4a/webm, lalu fallback ke format stream campuran/audio terbaik
+        'format': 'bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best',
+        'outtmpl': out_template,
+        'quiet': True,
+        'no_warnings': True,
+        'cachedir': False,  # Cegah penggunaan cache signature/token kadaluarsa
+        'noplaylist': True,
+        'retries': 3,
+        'fragment_retries': 3,
+        'socket_timeout': 30,
+        'http_headers': {
+            'User-Agent': (
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                'Chrome/124.0.0.0 Safari/537.36'
+            ),
+            'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+        },
+    }
+
+    if player_clients:
+        opts['extractor_args'] = {
+            'youtube': {
+                'player_client': player_clients
+            }
+        }
+
+    # Dukungan file cookies jika disediakan via environment variable atau file lokal
+    cookie_file = cookies_path or os.environ.get("YOUTUBE_COOKIES_FILE")
+    if cookie_file and os.path.isfile(cookie_file):
+        opts['cookiefile'] = cookie_file
+
+    if convert_to_mp3:
+        opts['postprocessors'] = [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '128'
+        }]
+
+    if bin_dir and os.path.isdir(bin_dir):
+        opts['ffmpeg_location'] = bin_dir
+    elif FFMPEG_BIN_DIR and os.path.isdir(FFMPEG_BIN_DIR):
+        opts['ffmpeg_location'] = FFMPEG_BIN_DIR
+    elif FFMPEG_PATH and os.path.isfile(FFMPEG_PATH):
+        opts['ffmpeg_location'] = os.path.dirname(FFMPEG_PATH)
+
+    return opts
+
+
+def _extract_downloaded_filepath(output_dir: str, file_id: str, convert_to_mp3: bool, target_mp3: str) -> Optional[str]:
+    """Mendeteksi file keluaran hasil unduhan yang valid di disk."""
+    if convert_to_mp3 and os.path.exists(target_mp3) and os.path.getsize(target_mp3) > 1024:
+        return target_mp3
+
+    for ext in ['m4a', 'webm', 'opus', 'mp3', 'wav', 'ogg', 'mp4']:
+        alt_path = os.path.join(output_dir, f"{file_id}.{ext}")
+        if os.path.exists(alt_path) and os.path.getsize(alt_path) > 1024:
+            return alt_path
+    return None
+
+
+def _format_download_error_message(err_msg: str) -> str:
+    """Menerjemahkan pesan error yt-dlp ke penjelasan yang informatif dan solutif bagi pengguna."""
+    err_lower = err_msg.lower()
+    if "403" in err_lower or "forbidden" in err_lower:
+        return (
+            "YouTube menolak akses stream audio (HTTP Error 403: Forbidden). "
+            "IP server hosting (Streamlit Cloud) dibatasi oleh YouTube. "
+            "Solusi: Gunakan metode 'Unggah Audio' dengan mengunggah berkas MP3/M4A/WAV secara langsung."
+        )
+    if "ffmpeg" in err_lower or "ffprobe" in err_lower or "avconv" in err_lower:
+        return (
+            "FFmpeg atau FFprobe tidak dapat ditemukan oleh yt-dlp. "
+            "Pastikan packages.txt di repositori menyertakan 'ffmpeg'."
+        )
+    if "video unavailable" in err_lower or "private video" in err_lower:
+        return "Video YouTube tidak tersedia, berstatus privat, atau telah dihapus oleh pemilik konten."
+    if "sign in" in err_lower or "bot" in err_lower or "confirm you're not a bot" in err_lower:
+        return (
+            "YouTube mendeteksi aktivitas otomatis (anti-bot) pada IP server. "
+            "Silakan unduh audio di perangkat lokal Anda terlebih dahulu, lalu gunakan opsi 'Unggah Audio'."
+        )
+    if "timed out" in err_lower or "urlopen error" in err_lower or "network" in err_lower or "connection" in err_lower:
+        return "Koneksi jaringan ke YouTube terputus atau gagal dijangkau. Periksa koneksi internet Anda."
+    return f"Gagal mengunduh audio YouTube: {err_msg}"
+
+
 def download_youtube_audio(
     url: str,
     output_dir: Optional[str] = None,
@@ -77,9 +174,10 @@ def download_youtube_audio(
     use_cache: bool = True,
 ) -> Tuple[bool, str, Optional[str]]:
     """
-    Mengunduh stream audio dari tautan video YouTube menggunakan yt-dlp.
+    Mengunduh stream audio dari tautan video YouTube menggunakan yt-dlp dengan multi-strategy fallback.
+    Secara adaptif mengatasi masalah HTTP 403 Forbidden pada datacenter/cloud (Streamlit Cloud).
     Secara default menghindari konversi ulang ke MP3 karena faster-whisper (PyAV) dapat membaca
-    format m4a/webm/opus secara langsung sehingga lebih cepat dan hemat CPU.
+    format m4a/webm/opus/mp4 secara langsung sehingga lebih cepat dan hemat CPU.
 
     Returns:
         (success: bool, message_or_path: str, video_title: Optional[str])
@@ -107,49 +205,42 @@ def download_youtube_audio(
 
     bin_dir = ensure_ffmpeg_in_runtime_path()
 
-    ydl_opts: Dict[str, Any] = {
-        'format': 'bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best',
-        'outtmpl': out_template,
-        'quiet': True,
-        'no_warnings': True,
-    }
-    if convert_to_mp3:
-        ydl_opts['postprocessors'] = [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '128'
-        }]
+    # Strategi multi-client fallback untuk mengatasi pemblokiran HTTP 403 YouTube di cloud
+    # 1. Android player client (terbukti paling resisten terhadap 403 di IP datacenter)
+    # 2. Kombinasi mweb + web_embedded
+    # 3. Default yt-dlp fallback
+    client_strategies = [
+        ['android'],
+        ['mweb', 'web_embedded'],
+        None,
+    ]
 
-    if bin_dir and os.path.isdir(bin_dir):
-        ydl_opts['ffmpeg_location'] = bin_dir
-    elif FFMPEG_BIN_DIR and os.path.isdir(FFMPEG_BIN_DIR):
-        ydl_opts['ffmpeg_location'] = FFMPEG_BIN_DIR
-    elif FFMPEG_PATH and os.path.isfile(FFMPEG_PATH):
-        ydl_opts['ffmpeg_location'] = os.path.dirname(FFMPEG_PATH)
+    last_error_message = ""
+    for clients in client_strategies:
+        ydl_opts = _build_ydl_options(
+            out_template=out_template,
+            target_mp3=target_mp3,
+            convert_to_mp3=convert_to_mp3,
+            bin_dir=bin_dir,
+            player_clients=clients,
+        )
 
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            video_title = info.get('title', 'Video YouTube')
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=True)
+                video_title = info.get('title', 'Video YouTube') if isinstance(info, dict) else 'Video YouTube'
 
-            if convert_to_mp3 and os.path.exists(target_mp3):
-                return True, target_mp3, video_title
+                found_path = _extract_downloaded_filepath(output_dir, file_id, convert_to_mp3, target_mp3)
+                if found_path:
+                    return True, found_path, video_title
 
-            for ext in ['m4a', 'webm', 'opus', 'mp3', 'wav', 'ogg']:
-                alt_path = os.path.join(output_dir, f"{file_id}.{ext}")
-                if os.path.exists(alt_path) and os.path.getsize(alt_path) > 0:
-                    return True, alt_path, video_title
+        except Exception as e:
+            last_error_message = str(e)
+            # Jika error adalah video unavailable/private/invalid, tidak perlu mencoba strategi client lain
+            err_lower = last_error_message.lower()
+            if "video unavailable" in err_lower or "private video" in err_lower or "does not exist" in err_lower:
+                break
+            continue
 
-            return False, "File audio tidak ditemukan setelah proses pengunduhan selesai.", video_title
-    except Exception as e:
-        err_msg = str(e)
-        err_lower = err_msg.lower()
-        if "ffmpeg" in err_lower or "ffprobe" in err_lower or "avconv" in err_lower:
-            return False, "FFmpeg atau FFprobe tidak dapat ditemukan oleh yt-dlp untuk konversi audio. Pastikan folder bin terpasang dengan benar.", None
-        if "video unavailable" in err_lower or "private video" in err_lower:
-            return False, "Video tidak tersedia, privat, atau dibatasi oleh pemilik konten.", None
-        if "bot" in err_lower or "sign in" in err_lower:
-            return False, "Akses YouTube dibatasi sementara oleh perlindungan bot. Silakan coba beberapa saat lagi.", None
-        if "timed out" in err_lower or "urlopen error" in err_lower or "network" in err_lower or "connection" in err_lower:
-            return False, "Koneksi ke YouTube terputus atau gagal dijangkau. Periksa koneksi internet Anda.", None
-        return False, f"Gagal mengunduh audio YouTube: {err_msg}", None
+    formatted_err = _format_download_error_message(last_error_message or "Format audio tidak ditemukan.")
+    return False, formatted_err, None
