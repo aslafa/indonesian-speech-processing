@@ -170,7 +170,7 @@ with st.sidebar:
         f"Model Aktif: Whisper={loaded_whisper[0] if loaded_whisper else 'Belum Dimuat'}, T5={'Aktif' if loaded_t5 else 'Belum Dimuat'}"
     )
 
-    if st.button("Bebaskan Memori Model", use_container_width=True):
+    if st.button("Bebaskan Memori Model", width="stretch"):
         w_cnt = unload_whisper_model()
         t_freed = unload_summarizer_model()
         if w_cnt > 0 or t_freed:
@@ -268,7 +268,7 @@ with tab_processing:
 
     # Tombol Eksekusi Pemrosesan
     st.markdown("<br>", unsafe_allow_html=True)
-    process_button = st.button("Mulai Pemrosesan", type="primary", use_container_width=True)
+    process_button = st.button("Mulai Pemrosesan", type="primary", width="stretch")
 
     if process_button:
         can_proceed = False
@@ -515,7 +515,7 @@ with tab_processing:
                 data=txt_content,
                 file_name="laporan_transkripsi_ringkasan.txt",
                 mime="text/plain",
-                use_container_width=True
+                width="stretch"
             )
         with d_col2:
             st.download_button(
@@ -523,7 +523,7 @@ with tab_processing:
                 data=json_content,
                 file_name="hasil_transkripsi_ringkasan.json",
                 mime="application/json",
-                use_container_width=True
+                width="stretch"
             )
 
 
@@ -660,7 +660,7 @@ with tab_eval:
             color="#DC2626", strokeDash=[4, 4], strokeWidth=1.5
         ).encode(y="y:Q")
 
-        st.altair_chart((chart_rtf + rule_rtf).configure_view(strokeWidth=0), use_container_width=True)
+        st.altair_chart((chart_rtf + rule_rtf).configure_view(strokeWidth=0), width="stretch")
         st.caption("Catatan: Nilai RTF < 1.0 (garis putus merah) menandakan pemrosesan lebih cepat dari durasi audio nyata.")
 
     with g_col2:
@@ -695,7 +695,7 @@ with tab_eval:
             text=alt.Text("Percepatan:Q", format=".2f")
         )
 
-        st.altair_chart((chart_speedup + text_speedup).configure_view(strokeWidth=0), use_container_width=True)
+        st.altair_chart((chart_speedup + text_speedup).configure_view(strokeWidth=0), width="stretch")
         st.caption("Catatan: Rasio perbandingan waktu eksekusi baseline tanpa optimasi terhadap arsitektur teroptimasi INT8.")
 
     st.markdown("---")

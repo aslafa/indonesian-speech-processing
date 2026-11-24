@@ -1,5 +1,7 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 # Dependensi Aplikasi Transkripsi dan Perangkuman Otomatis Bahasa Indonesia
-# Python 3.10+ kompatibel
+# Python 3.10+ kompatibel (Teroptimasi untuk CPU & Streamlit Community Cloud)
 
 # Speech-to-Text & Audio Processing
 faster-whisper>=1.0.0
@@ -7,8 +9,8 @@ av>=11.0.0,<14.0.0
 yt-dlp>=2024.0.0
 imageio-ffmpeg>=0.5.1
 
-# NLP, Model Transformers & Tokenizer
-torch>=2.0.0
+# NLP, Model Transformers & Tokenizer (PyTorch CPU-only)
+torch==2.4.0+cpu
 transformers>=4.38.0
 sentencepiece>=0.2.0
 
